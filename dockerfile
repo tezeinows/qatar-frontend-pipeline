@@ -1,4 +1,4 @@
-FROM nginx:1.27.5-alpine3.22
+FROM nginx:1.27.5-alpine3.23
 
 # Build args for traceability
 ARG BUILD_DATE
