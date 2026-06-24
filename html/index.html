@@ -1,49 +1,516 @@
-server {
-    listen 8080;
-    server_name _;
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>Wingstop — Open for Business</title>
+  <link rel="stylesheet" href="styles.css" />
+  <!-- Preconnect for Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet" />
+</head>
+<body>
 
-    root /usr/share/nginx/html;
-    index index.html;
+  <!-- ══════════════════════════════════════════
+       HEADER
+  ══════════════════════════════════════════ -->
+  <!-- Lang toggle sits outside the hero so it floats over everything -->
+  <div class="lang-toggle-wrap">
+    <button
+      class="lang-toggle"
+      id="langToggle"
+      aria-label="Switch language"
+      type="button"
+    >
+      <span id="langToggleLabel">عربي</span>
+    </button>
+  </div>
 
-    # Security headers
-    add_header X-Frame-Options "SAMEORIGIN" always;
-    add_header X-Content-Type-Options "nosniff" always;
-    add_header X-XSS-Protection "1; mode=block" always;
-    add_header Referrer-Policy "strict-origin-when-cross-origin" always;
-    add_header Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:;" always;
-    add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
+  <!-- ══════════════════════════════════════════
+       HERO (green banner — logo lives here)
+  ══════════════════════════════════════════ -->
+  <section class="hero" aria-labelledby="heroHeadline">
 
-    # Hide nginx version
-    server_tokens off;
+    <!-- Large centred logo -->
+    <a href="#" aria-label="Wingstop" class="hero__logo-link">
+      <img
+        src="assets/images/Screenshot_2026-03-03_125705-removebg-preview.png"
+        alt="Wingstop"
+        class="hero__logo"
+        onerror="this.style.display='none'; this.nextElementSibling.style.display='block';"
+      />
+      <span class="site-header__logo-text" style="display:none;">
+        Wing<span>stop</span>
+      </span>
+    </a>
 
-    # Health check endpoint
-    location /health {
-        access_log off;
-        return 200 "healthy\n";
-        add_header Content-Type text/plain;
+    <h1 class="hero__headline" id="heroHeadline" data-i18n="headline">
+      We're Still Open. We've Got Your Wings.
+    </h1>
+    <p class="hero__subtext" data-i18n="subtext">
+      Our website is currently unavailable, but your Wingstop favorites are ready and waiting.
+    </p>
+  </section>
+
+
+  <!-- ══════════════════════════════════════════
+       INFO / BODY COPY
+  ══════════════════════════════════════════ -->
+  <div class="info-section-wrap">
+  <section class="info-section">
+    <div class="info-section__inner">
+      <p class="info-section__body" data-i18n="bodyCopy1">
+        We are open across all restaurants for dine-in, takeaway, and delivery.
+      </p>
+      <p class="info-section__body" data-i18n="bodyCopy2">
+        Whether you're craving Lemon Pepper, Atomic, or your go-to combo, our restaurants are serving up bold flavors just like always.
+      </p>
+      <p class="info-section__body" data-i18n="bodyCopy3">
+        To find your nearest Wingstop and opening hours, visit our official Google Business profile for your location.
+      </p>
+    </div>
+
+    <!-- Google CTA -->
+    <div class="google-cta">
+      <a
+        href="https://www.google.com/maps/search/Wingstop"
+        class="btn-google"
+        target="_blank"
+        rel="noopener noreferrer"
+        data-i18n="googleCta"
+      >
+        <!-- Google Maps pin icon -->
+        <svg class="btn-google__icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+        </svg>
+        Find a Wingstop Near You
+      </a>
+      <p class="google-cta__hint" data-i18n="googleHint">
+        Visit Google and search for Wingstop + your city to find:
+      </p>
+      <ul class="google-cta__list" aria-label="Google details list">
+        <li data-i18n="googleItem1">Opening hours</li>
+        <li data-i18n="googleItem2">Directions and map route</li>
+        <li data-i18n="googleItem3">Contact details</li>
+        <li data-i18n="googleItem4">Latest live updates</li>
+      </ul>
+    </div>
+  </section>
+  </div>
+
+
+  <!-- ══════════════════════════════════════════
+       COUNTRY GRID — DELIVERY
+  ══════════════════════════════════════════ -->
+  <section class="countries-section" aria-label="Order for delivery by country">
+    <p class="countries-section__title" data-i18n="deliveryTitle">Order for Delivery</p>
+    <p class="countries-section__subtitle" data-i18n="deliverySubtitle">
+      You can also find us on your favourite delivery platforms in your area.
+    </p>
+
+    <div class="country-grid">
+
+      <!-- Saudi Arabia -->
+      <article class="country-card country-card--multi-cta">
+        <img class="country-card__flag" src="https://flagcdn.com/sa.svg" alt="Saudi Arabia flag" width="80" loading="lazy" />
+        <h2 class="country-card__name" data-i18n-en="Saudi Arabia" data-i18n-ar="المملكة العربية السعودية">
+          Saudi Arabia
+          <span class="country-card__name-ar">المملكة العربية السعودية</span>
+        </h2>
+        <div class="country-card__buttons">
+          <a
+            href="https://thechefz.com"
+            class="btn-order btn-order--chefz"
+            data-i18n="orderChefz"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Order Wingstop Saudi Arabia on Chefz"
+          >
+            <svg class="btn-order__icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M11 9H9V2H7v7H5V2H3v7c0 2.12 1.66 3.84 3.75 3.97V22h2.5v-9.03C11.34 12.84 13 11.12 13 9V2h-2v7zm5-3v8h2.5v8H21V2c-2.76 0-5 2.24-5 4z"/>
+            </svg>
+            Order on Chefz
+          </a>
+          <a
+            href="https://hungerstation.com/sa-en"
+            class="btn-order btn-order--hungerstation"
+            data-i18n="orderHungerStation"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Order Wingstop Saudi Arabia on HungerStation"
+          >
+            <svg class="btn-order__icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M11 9H9V2H7v7H5V2H3v7c0 2.12 1.66 3.84 3.75 3.97V22h2.5v-9.03C11.34 12.84 13 11.12 13 9V2h-2v7zm5-3v8h2.5v8H21V2c-2.76 0-5 2.24-5 4z"/>
+            </svg>
+            Order on HungerStation
+          </a>
+          <a
+            href="https://jahez.net"
+            class="btn-order btn-order--jahez"
+            data-i18n="orderJahez"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Order Wingstop Saudi Arabia on Jahez"
+          >
+            <svg class="btn-order__icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M11 9H9V2H7v7H5V2H3v7c0 2.12 1.66 3.84 3.75 3.97V22h2.5v-9.03C11.34 12.84 13 11.12 13 9V2h-2v7zm5-3v8h2.5v8H21V2c-2.76 0-5 2.24-5 4z"/>
+            </svg>
+            Order on Jahez
+          </a>
+          <a
+            href="https://www.keeta-global.com/SA/en"
+            class="btn-order btn-order--keeta"
+            data-i18n="orderKeeta"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Order Wingstop Saudi Arabia on Keeta"
+          >
+            <svg class="btn-order__icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M11 9H9V2H7v7H5V2H3v7c0 2.12 1.66 3.84 3.75 3.97V22h2.5v-9.03C11.34 12.84 13 11.12 13 9V2h-2v7zm5-3v8h2.5v8H21V2c-2.76 0-5 2.24-5 4z"/>
+            </svg>
+            Order on Keeta
+          </a>
+          <a
+            href="https://food.noon.com/saudi-en/"
+            class="btn-order btn-order--noon"
+            data-i18n="orderNoonFood"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Order Wingstop Saudi Arabia on noon FOOD"
+          >
+            <svg class="btn-order__icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M11 9H9V2H7v7H5V2H3v7c0 2.12 1.66 3.84 3.75 3.97V22h2.5v-9.03C11.34 12.84 13 11.12 13 9V2h-2v7zm5-3v8h2.5v8H21V2c-2.76 0-5 2.24-5 4z"/>
+            </svg>
+            Order on noon FOOD
+          </a>
+          <a
+            href="https://toyou.io"
+            class="btn-order btn-order--toyou"
+            data-i18n="orderToYou"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Order Wingstop Saudi Arabia on ToYou"
+          >
+            <svg class="btn-order__icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M11 9H9V2H7v7H5V2H3v7c0 2.12 1.66 3.84 3.75 3.97V22h2.5v-9.03C11.34 12.84 13 11.12 13 9V2h-2v7zm5-3v8h2.5v8H21V2c-2.76 0-5 2.24-5 4z"/>
+            </svg>
+            Order on ToYou
+          </a>
+        </div>
+      </article>
+
+      <!-- UAE -->
+      <article class="country-card country-card--multi-cta">
+        <img class="country-card__flag" src="https://flagcdn.com/ae.svg" alt="UAE flag" width="80" loading="lazy" />
+        <h2 class="country-card__name" data-i18n-en="UAE" data-i18n-ar="الإمارات العربية المتحدة">
+          UAE
+          <span class="country-card__name-ar">الإمارات العربية المتحدة</span>
+        </h2>
+        <div class="country-card__buttons">
+          <a
+            href="https://www.careem.com/en-AE/food"
+            class="btn-order btn-order--careem"
+            data-i18n="orderCareemFood"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Order Wingstop UAE on Careem Food"
+          >
+            <svg class="btn-order__icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M11 9H9V2H7v7H5V2H3v7c0 2.12 1.66 3.84 3.75 3.97V22h2.5v-9.03C11.34 12.84 13 11.12 13 9V2h-2v7zm5-3v8h2.5v8H21V2c-2.76 0-5 2.24-5 4z"/>
+            </svg>
+            Order on Careem Food
+          </a>
+          <a
+            href="https://deliveroo.ae/"
+            class="btn-order btn-order--deliveroo"
+            data-i18n="orderDeliveroo"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Order Wingstop UAE on Deliveroo"
+          >
+            <svg class="btn-order__icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M11 9H9V2H7v7H5V2H3v7c0 2.12 1.66 3.84 3.75 3.97V22h2.5v-9.03C11.34 12.84 13 11.12 13 9V2h-2v7zm5-3v8h2.5v8H21V2c-2.76 0-5 2.24-5 4z"/>
+            </svg>
+            Order on Deliveroo
+          </a>
+          <a
+            href="https://www.keeta-global.com/AE/en"
+            class="btn-order btn-order--keeta"
+            data-i18n="orderKeeta"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Order Wingstop UAE on Keeta"
+          >
+            <svg class="btn-order__icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M11 9H9V2H7v7H5V2H3v7c0 2.12 1.66 3.84 3.75 3.97V22h2.5v-9.03C11.34 12.84 13 11.12 13 9V2h-2v7zm5-3v8h2.5v8H21V2c-2.76 0-5 2.24-5 4z"/>
+            </svg>
+            Order on Keeta
+          </a>
+          <a
+            href="https://food.noon.com"
+            class="btn-order btn-order--noon"
+            data-i18n="orderNoonFood"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Order Wingstop UAE on noon FOOD"
+          >
+            <svg class="btn-order__icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M11 9H9V2H7v7H5V2H3v7c0 2.12 1.66 3.84 3.75 3.97V22h2.5v-9.03C11.34 12.84 13 11.12 13 9V2h-2v7zm5-3v8h2.5v8H21V2c-2.76 0-5 2.24-5 4z"/>
+            </svg>
+            Order on noon FOOD
+          </a>
+          <a
+            href="https://smiles.ae/en/index.html"
+            class="btn-order btn-order--smiles"
+            data-i18n="orderSmiles"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Order Wingstop UAE on Smiles"
+          >
+            <svg class="btn-order__icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M11 9H9V2H7v7H5V2H3v7c0 2.12 1.66 3.84 3.75 3.97V22h2.5v-9.03C11.34 12.84 13 11.12 13 9V2h-2v7zm5-3v8h2.5v8H21V2c-2.76 0-5 2.24-5 4z"/>
+            </svg>
+            Order on Smiles
+          </a>
+          <a
+            href="https://www.talabat.com/uae/"
+            class="btn-order btn-order--talabat"
+            data-i18n="orderTalabat"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Order Wingstop UAE on Talabat"
+          >
+            <svg class="btn-order__icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M11 9H9V2H7v7H5V2H3v7c0 2.12 1.66 3.84 3.75 3.97V22h2.5v-9.03C11.34 12.84 13 11.12 13 9V2h-2v7zm5-3v8h2.5v8H21V2c-2.76 0-5 2.24-5 4z"/>
+            </svg>
+            Order on Talabat
+          </a>
+          <a
+            href="https://www.zomato.com/uae/"
+            class="btn-order btn-order--zomato"
+            data-i18n="orderZomato"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Order Wingstop UAE on Zomato"
+          >
+            <svg class="btn-order__icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M11 9H9V2H7v7H5V2H3v7c0 2.12 1.66 3.84 3.75 3.97V22h2.5v-9.03C11.34 12.84 13 11.12 13 9V2h-2v7zm5-3v8h2.5v8H21V2c-2.76 0-5 2.24-5 4z"/>
+            </svg>
+            Order on Zomato
+          </a>
+        </div>
+      </article>
+
+      <!-- Kuwait -->
+      <article class="country-card">
+        <img class="country-card__flag" src="https://flagcdn.com/kw.svg" alt="Kuwait flag" width="80" loading="lazy" />
+        <h2 class="country-card__name" data-i18n-en="Kuwait" data-i18n-ar="الكويت">
+          Kuwait
+          <span class="country-card__name-ar">الكويت</span>
+        </h2>
+        <div class="country-card__buttons">
+          <a
+            href="https://www.talabat.com/kuwait/"
+            class="btn-order btn-order--talabat"
+            data-i18n="orderTalabat"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Order Wingstop Kuwait on Talabat"
+          >
+            <svg class="btn-order__icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M11 9H9V2H7v7H5V2H3v7c0 2.12 1.66 3.84 3.75 3.97V22h2.5v-9.03C11.34 12.84 13 11.12 13 9V2h-2v7zm5-3v8h2.5v8H21V2c-2.76 0-5 2.24-5 4z"/>
+            </svg>
+            Order on Talabat
+          </a>
+        </div>
+      </article>
+
+      <!-- Bahrain -->
+      <article class="country-card">
+        <img class="country-card__flag" src="https://flagcdn.com/bh.svg" alt="Bahrain flag" width="80" loading="lazy" />
+        <h2 class="country-card__name" data-i18n-en="Bahrain" data-i18n-ar="البحرين">
+          Bahrain
+          <span class="country-card__name-ar">البحرين</span>
+        </h2>
+        <div class="country-card__buttons">
+          <a
+            href="https://www.talabat.com/bahrain/"
+            class="btn-order btn-order--talabat"
+            data-i18n="orderTalabat"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Order Wingstop Bahrain on Talabat"
+          >
+            <svg class="btn-order__icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M11 9H9V2H7v7H5V2H3v7c0 2.12 1.66 3.84 3.75 3.97V22h2.5v-9.03C11.34 12.84 13 11.12 13 9V2h-2v7zm5-3v8h2.5v8H21V2c-2.76 0-5 2.24-5 4z"/>
+            </svg>
+            Order on Talabat
+          </a>
+        </div>
+      </article>
+
+
+    </div><!-- /.country-grid -->
+  </section>
+
+
+  <!-- ══════════════════════════════════════════
+       FOOTER
+  ══════════════════════════════════════════ -->
+  <footer class="site-footer">
+    <p class="site-footer__thanks" data-i18n="footerThanks">
+      Thank you for your patience while we work to restore our website.
+    </p>
+    <p class="site-footer__soon" data-i18n="footerSoon">
+      We look forward to serving you soon.
+    </p>
+    <p class="site-footer__brand" data-i18n="footerBrand">The Flavor Experts</p>
+    <p class="site-footer__copy" data-i18n="footerCopy">© Wingstop International. All rights reserved.</p>
+  </footer>
+
+
+  <!-- ══════════════════════════════════════════
+       i18n + RTL SCRIPT
+  ══════════════════════════════════════════ -->
+  <script>
+    const TRANSLATIONS = {
+      en: {
+        headline:         "We're Still Open. We've Got Your Wings.",
+        subtext:          'Our website is currently unavailable, but your Wingstop favorites are ready and waiting.',
+        bodyCopy1:        'We are open across all restaurants for dine-in, takeaway, and delivery.',
+        bodyCopy2:        'Whether you\'re craving Lemon Pepper, Atomic, or your go-to combo, our restaurants are serving up bold flavors just like always.',
+        bodyCopy3:        'To find your nearest Wingstop and opening hours, visit our official Google Business profile for your location.',
+        googleCta:        'Find a Wingstop Near You',
+        googleHint:       'Visit Google and search for Wingstop + your city to find:',
+        googleItem1:      'Opening hours',
+        googleItem2:      'Directions and map route',
+        googleItem3:      'Contact details',
+        googleItem4:      'Latest live updates',
+        deliveryTitle:    'Order for Delivery',
+        deliverySubtitle: 'You can also find us on your favourite delivery platforms in your area.',
+        orderDeliveroo:   'Order on Deliveroo',
+        orderTalabat:     'Order on Talabat',
+        orderHungerStation: 'Order on HungerStation',
+        orderJahez:       'Order on Jahez',
+        orderNoonFood:    'Order on noon FOOD',
+        orderChefz:       'Order on Chefz',
+        orderToYou:       'Order on ToYou',
+        orderKeeta:       'Order on Keeta',
+        orderCareemFood:  'Order on Careem Food',
+        orderSmiles:      'Order on Smiles',
+        orderZomato:      'Order on Zomato',
+        footerThanks:     'Thank you for your patience while we work to restore our website.',
+        footerSoon:       'We look forward to serving you soon.',
+        footerBrand:      'The Flavor Experts',
+        footerCopy:       '© Wingstop International. All rights reserved.',
+        toggleLabel:      'عربي',
+      },
+      ar: {
+        headline:         'يسرّنا إعلامكم أن جميع فروعنا مفتوحة ونعمل كالمعتاد… وأجنحتك المفضلة بانتظارك',
+        subtext:          'موقعنا الإلكتروني غير متاح حالياً، لكن وجبات وينجستوب المفضلة لديك جاهزة وبانتظارك.',
+        bodyCopy1:        'يسرّنا إعلامكم أن جميع فروعنا مفتوحة وتعمل كالمعتاد، للاستقبال داخل المطعم، والطلبات الخارجية، وخدمة التوصيل.',
+        bodyCopy2:        'سواء كنت تشتهي ليمون بيبر، أتومِك، أو وجبتك المفضلة المعتادة، مطاعمنا تقدم لك النكهات الجريئة كما اعتدت دائماً.',
+        bodyCopy3:        'للعثور على أقرب فرع لوينغ ستوب ومعرفة أوقات العمل، يُرجى زيارة صفحتنا الرسمية على جوجل للأعمال الخاصة بموقعك.',
+        googleCta:        'اعثر على أقرب فرع وينغ ستوب إليك',
+        googleHint:       'قم بزيارة جوجل وابحث عن وينغ ستوب + اسم مدينتك للحصول على',
+        googleItem1:      'أوقات العمل',
+        googleItem2:      'الاتجاهات وخريطة الوصول',
+        googleItem3:      'بيانات التواصل',
+        googleItem4:      'آخر التحديثات المباشرة',
+        deliveryTitle:    'اطلب خدمة التوصيل',
+        deliverySubtitle: 'يمكنك أيضاً العثور علينا عبر منصات التوصيل المفضلة لديك في منطقتك',
+        orderDeliveroo:   'اطلب عبر ديليفرو',
+        orderTalabat:     'اطلب عبر طلبات',
+        orderHungerStation: 'اطلب عبر هنجرستيشن',
+        orderJahez:       'اطلب عبر جاهز',
+        orderNoonFood:    'اطلب عبر نون فود',
+        orderChefz:       'اطلب عبر شيفز',
+        orderToYou:       'اطلب عبر تو يو',
+        orderKeeta:       'اطلب عبر كيتا',
+        orderCareemFood:  'اطلب عبر كريم فود',
+        orderSmiles:      'اطلب عبر سمايلز',
+        orderZomato:      'اطلب عبر زوماتو',
+        footerThanks:     'شكرًا لصبركم وتفهمكم بينما نعمل على استعادة موقعنا الإلكتروني.',
+        footerSoon:       'نتطلع لخدمتكم قريبًا.',
+        footerBrand:      'خبراء النكهة',
+        footerCopy:       '© وينغ ستوب الدولية. جميع الحقوق محفوظة.',
+        toggleLabel:      'English',
+      },
+    };
+
+    function applyLanguage(lang) {
+      const html = document.documentElement;
+      const t = TRANSLATIONS[lang];
+
+      // Set lang + dir on <html>
+      html.setAttribute('lang', lang);
+      html.setAttribute('dir', lang === 'ar' ? 'rtl' : 'ltr');
+
+      // Update all translatable text nodes
+      document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        if (t[key] !== undefined) {
+          // Preserve child elements (e.g. .country-card__name-ar span inside h2)
+          const children = Array.from(el.childNodes).filter(n => n.nodeType === Node.ELEMENT_NODE);
+          el.childNodes.forEach(n => {
+            if (n.nodeType === Node.TEXT_NODE) n.textContent = '';
+          });
+          el.insertAdjacentText('afterbegin', t[key]);
+          // Re-append any child elements that were cleared
+          children.forEach(c => el.appendChild(c));
+        }
+      });
+
+      // Update the button label
+      document.getElementById('langToggleLabel').textContent = t.toggleLabel;
+
+      // Update country names for the active language
+      document.querySelectorAll('.country-card__name').forEach(el => {
+        const nameText = el.getAttribute('data-i18n-' + lang);
+        if (!nameText) return;
+
+        // Replace only the text node at the start of the heading.
+        const textNode = Array.from(el.childNodes).find(n => n.nodeType === Node.TEXT_NODE);
+        if (textNode) textNode.textContent = nameText + '\n';
+
+        // Keep the Arabic subtitle visible in English only.
+        const arabicSubtitle = el.querySelector('.country-card__name-ar');
+        if (arabicSubtitle) {
+          arabicSubtitle.style.display = lang === 'ar' ? 'none' : 'block';
+        }
+      });
+
+      // Persist preference
+      localStorage.setItem('ws-lang', lang);
+
+      // Update page title
+      document.title = lang === 'ar'
+        ? 'وينغ ستوب — افتح للطلب'
+        : 'Wingstop — Open for Business';
     }
 
-    # Static assets caching
-    location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2)$ {
-        expires 1y;
-        add_header Cache-Control "public, immutable";
-        access_log off;
-    }
+    // Toggle handler
+    document.getElementById('langToggle').addEventListener('click', () => {
+      const current = document.documentElement.getAttribute('lang') || 'en';
+      applyLanguage(current === 'en' ? 'ar' : 'en');
+    });
 
-    # Main app
-    location / {
-        try_files $uri $uri/ /index.html;
-    }
+    // On load: check localStorage first, then browser language
+    (function init() {
+      const saved = localStorage.getItem('ws-lang');
+      if (saved && TRANSLATIONS[saved]) {
+        applyLanguage(saved);
+        return;
+      }
+      const browserLang = (navigator.language || navigator.userLanguage || '').toLowerCase();
+      if (browserLang.startsWith('ar')) {
+        applyLanguage('ar');
+      }
+      // Default: English (HTML already set to lang="en" dir="ltr")
+    })();
+  </script>
 
-    # Block hidden files
-    location ~ /\. {
-        deny all;
-        access_log off;
-        log_not_found off;
-    }
-
-    # Gzip
-    gzip on;
-    gzip_vary on;
-    gzip_types text/plain text/css application/json application/javascript text/xml application/xml text/javascript;
-}
+</body>
+</html>
