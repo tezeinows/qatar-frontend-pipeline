@@ -13,8 +13,9 @@ COPY html/ /usr/share/nginx/html/
 RUN addgroup -g 1001 appgroup && \
     adduser -u 1001 -G appgroup -s /bin/sh -D appuser && \
     chown -R appuser:appgroup /usr/share/nginx/html /var/cache/nginx /var/log/nginx && \
-    touch /run/nginx.pid && \
-    chown appuser:appgroup /run/nginx.pid
+    sed -i 's|/run/nginx.pid|/tmp/nginx.pid|g' /etc/nginx/nginx.conf && \
+    touch /tmp/nginx.pid && \
+    chown appuser:appgroup /tmp/nginx.pid
 
 USER appuser
 EXPOSE 8080
