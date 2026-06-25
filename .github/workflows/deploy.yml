@@ -62,12 +62,7 @@ jobs:
       - name: Deploy to EKS
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          STRAPI_API_TOKEN: ${{ secrets.STRAPI_API_TOKEN }}
-          REVALIDATE_SECRET: ${{ secrets.REVALIDATE_SECRET }}
         run: |
-          kubectl set env deployment/qatar-frontend \
-            STRAPI_API_TOKEN="$STRAPI_API_TOKEN" \
-            REVALIDATE_SECRET="$REVALIDATE_SECRET"
-          kubectl set image deployment/qatar-frontend \
-            qatar-frontend=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-          kubectl rollout status deployment/qatar-frontend --timeout=120s
+          sed -i "s|PLACEHOLDER_ECR_IMAGE|$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG|g" k8s/deployment.yaml
+          kubectl apply -f k8s/deployment.yaml -n qatar-frontend
+          kubectl rollout status deployment/qatar-frontend -n qatar-frontend --timeout=120s

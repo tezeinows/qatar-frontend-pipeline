@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: qatar-frontend
+  namespace: qatar-frontend
   labels:
     app: qatar-frontend
 spec:
@@ -43,10 +44,10 @@ spec:
               memory: 512Mi
           readinessProbe:
             httpGet:
-              path: /api/revalidate
+              path: /en-QA
               port: 3000
-            initialDelaySeconds: 10
-            periodSeconds: 5
+            initialDelaySeconds: 15
+            periodSeconds: 10
           livenessProbe:
             httpGet:
               path: /
