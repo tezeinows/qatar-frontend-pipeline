@@ -5,11 +5,9 @@ import Callout from '@/components/Callout'
 import CarouselSection from '@/components/CarouselSection'
 import MenuItemsSection from '@/components/MenuItemsSection'
 
-const SUPPORTED_LOCALES = ['en-QA', 'ar-QA']
+export const dynamic = 'force-dynamic'
 
-export async function generateStaticParams() {
-  return SUPPORTED_LOCALES.map((locale) => ({ locale }))
-}
+const SUPPORTED_LOCALES = ['en-QA', 'ar-QA']
 
 export default async function HomePage({ params }: { params: { locale: string } }) {
   const { locale } = params

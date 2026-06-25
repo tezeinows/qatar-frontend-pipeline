@@ -3,11 +3,9 @@ import { getNavHeader, getNavFooter } from '@/lib/strapi'
 import NavHeader from '@/components/NavHeader'
 import NavFooter from '@/components/NavFooter'
 
-const SUPPORTED_LOCALES = ['en-QA', 'ar-QA']
+export const dynamic = 'force-dynamic'
 
-export async function generateStaticParams() {
-  return SUPPORTED_LOCALES.map((locale) => ({ locale }))
-}
+const SUPPORTED_LOCALES = ['en-QA', 'ar-QA']
 
 export default async function LocaleLayout({
   children,
