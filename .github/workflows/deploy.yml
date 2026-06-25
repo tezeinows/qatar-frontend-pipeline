@@ -6,7 +6,7 @@ on:
 
 env:
   AWS_REGION: eu-central-1
-  ECR_REPOSITORY: qatar-frontend
+  ECR_REPOSITORY: qatar-front-end
   EKS_CLUSTER: qatar-cluster-frankfurt
   IMAGE_TAG: ${{ github.sha }}
 
