@@ -1,0 +1,22 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --ws-yellow: #FFD200;
+  --ws-red: #C8102E;
+  --ws-black: #1A1A1A;
+}
+
+[dir="rtl"] {
+  font-family: 'Noto Sans Arabic', system-ui, sans-serif;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--ws-black);
+  color: white;
+}

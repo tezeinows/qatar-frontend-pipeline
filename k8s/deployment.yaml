@@ -4,65 +4,64 @@ metadata:
   name: qatar-frontend
   labels:
     app: qatar-frontend
-    version: "1.0"
 spec:
   replicas: 2
   selector:
     matchLabels:
       app: qatar-frontend
-  strategy:
-    type: RollingUpdate
-    rollingUpdate:
-      maxSurge: 1
-      maxUnavailable: 0
   template:
     metadata:
       labels:
         app: qatar-frontend
     spec:
-      topologySpreadConstraints:
-        - maxSkew: 1
-          topologyKey: kubernetes.io/hostname
-          whenUnsatisfiable: DoNotSchedule
-          labelSelector:
-            matchLabels:
-              app: qatar-frontend
-      securityContext:
-        runAsNonRoot: true
-        runAsUser: 1001
-        runAsGroup: 1001
-        fsGroup: 1001
       containers:
         - name: qatar-frontend
-          image: IMAGE_PLACEHOLDER
-          imagePullPolicy: Always
+          image: PLACEHOLDER_ECR_IMAGE
           ports:
-            - containerPort: 8080
-          securityContext:
-            allowPrivilegeEscalation: false
-            readOnlyRootFilesystem: false
-            capabilities:
-              drop:
-                - ALL
+            - containerPort: 3000
+          env:
+            - name: NODE_ENV
+              value: production
+            - name: NEXT_PUBLIC_STRAPI_URL
+              value: https://cms.globalwingstop.com
+            - name: STRAPI_API_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: qatar-frontend-secrets
+                  key: strapi-api-token
+            - name: REVALIDATE_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: qatar-frontend-secrets
+                  key: revalidate-secret
           resources:
             requests:
-              cpu: "50m"
-              memory: "64Mi"
+              cpu: 100m
+              memory: 256Mi
             limits:
-              cpu: "200m"
-              memory: "128Mi"
-          livenessProbe:
-            httpGet:
-              path: /health
-              port: 8080
-            initialDelaySeconds: 10
-            periodSeconds: 15
-            failureThreshold: 3
+              cpu: 500m
+              memory: 512Mi
           readinessProbe:
             httpGet:
-              path: /health
-              port: 8080
-            initialDelaySeconds: 5
+              path: /api/revalidate
+              port: 3000
+            initialDelaySeconds: 10
+            periodSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 3000
+            initialDelaySeconds: 30
             periodSeconds: 10
-            failureThreshold: 3
-            
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: qatar-frontend
+spec:
+  selector:
+    app: qatar-frontend
+  ports:
+    - port: 80
+      targetPort: 3000
+  type: ClusterIP

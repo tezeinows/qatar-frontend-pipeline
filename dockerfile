@@ -1,23 +1,29 @@
-FROM nginx:stable-alpine3.23
+FROM node:20-alpine AS deps
+WORKDIR /app
+COPY package.json package-lock.json* ./
+RUN npm ci
 
-ARG BUILD_DATE
-ARG GIT_SHA
-LABEL org.opencontainers.image.created="${BUILD_DATE}" \
-      org.opencontainers.image.revision="${GIT_SHA}" \
-      org.opencontainers.image.source="https://github.com/tezeinows/qatar-frontend-pipeline"
+FROM node:20-alpine AS builder
+WORKDIR /app
+COPY --from=deps /app/node_modules ./node_modules
+COPY . .
+ARG NEXT_PUBLIC_STRAPI_URL=https://cms.globalwingstop.com
+ENV NEXT_PUBLIC_STRAPI_URL=$NEXT_PUBLIC_STRAPI_URL
+RUN npm run build
 
-RUN rm /etc/nginx/conf.d/default.conf
-COPY nginx/nginx.conf /etc/nginx/conf.d/default.conf
-COPY html/ /usr/share/nginx/html/
+FROM node:20-alpine AS runner
+WORKDIR /app
+ENV NODE_ENV=production
+ENV PORT=3000
 
-RUN addgroup -g 1001 appgroup && \
-    adduser -u 1001 -G appgroup -s /bin/sh -D appuser && \
-    chown -R appuser:appgroup /usr/share/nginx/html /var/cache/nginx /var/log/nginx && \
-    sed -i 's|/run/nginx.pid|/tmp/nginx.pid|g' /etc/nginx/nginx.conf && \
-    touch /tmp/nginx.pid && \
-    chown appuser:appgroup /tmp/nginx.pid
+RUN addgroup --system --gid 1001 nodejs && \
+    adduser --system --uid 1001 nextjs
 
-USER appuser
-EXPOSE 8080
-HEALTHCHECK --interval=30s --timeout=5s --start-period=5s --retries=3 \
-  CMD wget -qO- http://localhost:8080/health || exit 1
+COPY --from=builder /app/public ./public
+COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
+COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+
+USER nextjs
+EXPOSE 3000
+
+CMD ["node", "server.js"]

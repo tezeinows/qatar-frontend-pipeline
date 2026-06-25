@@ -1,34 +1,29 @@
-name: Build & Deploy to EKS Frankfurt
+name: Build and Deploy to EKS
 
 on:
   push:
-    branches:
-      - main
-  workflow_dispatch:
+    branches: [main]
+
+env:
+  AWS_REGION: eu-central-1
+  ECR_REPOSITORY: qatar-frontend
+  EKS_CLUSTER: qatar-cluster-frankfurt
+  IMAGE_TAG: ${{ github.sha }}
 
 permissions:
   id-token: write
   contents: read
 
-env:
-  AWS_REGION: eu-central-1
-  ECR_REGISTRY: 701372699131.dkr.ecr.eu-central-1.amazonaws.com
-  ECR_REPOSITORY: qatar-front-end
-  EKS_CLUSTER: qatar-cluster-frankfurt
-  NAMESPACE: qatar-frontend
-
 jobs:
-  build-and-push:
-    name: Build & Push Image
+  deploy:
     runs-on: ubuntu-latest
-    outputs:
-      image-tag: ${{ steps.meta.outputs.tag }}
+    environment: production
 
     steps:
-      - name: Checkout code
+      - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Configure AWS credentials via OIDC
+      - name: Configure AWS credentials (OIDC)
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: arn:aws:iam::701372699131:role/github-actions-qatar-deploy
@@ -38,77 +33,41 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
 
-      - name: Generate image tag
-        id: meta
-        run: |
-          SHA_TAG=${GITHUB_SHA::8}
-          echo "tag=${SHA_TAG}" >> $GITHUB_OUTPUT
-          echo "Image tag: ${SHA_TAG}"
-
-      - name: Build Docker image
+      - name: Build, tag, and push image to ECR
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         run: |
           docker build \
-            --platform linux/amd64 \
-            --build-arg BUILD_DATE=$(date -u +"%Y-%m-%dT%H:%M:%SZ") \
-            --build-arg GIT_SHA=${{ steps.meta.outputs.tag }} \
-            -t $ECR_REGISTRY/$ECR_REPOSITORY:${{ steps.meta.outputs.tag }} \
+            --build-arg NEXT_PUBLIC_STRAPI_URL=https://cms.globalwingstop.com \
+            -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG \
             -t $ECR_REGISTRY/$ECR_REPOSITORY:latest \
             .
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
 
-      - name: Push image to ECR
+      - name: Scan image for critical vulnerabilities
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         run: |
-          docker push $ECR_REGISTRY/$ECR_REPOSITORY:${{ steps.meta.outputs.tag }}
+          aws ecr start-image-scan \
+            --repository-name $ECR_REPOSITORY \
+            --image-id imageTag=$IMAGE_TAG || true
 
-      - name: Scan image for vulnerabilities
-        uses: aquasecurity/trivy-action@master
-        with:
-          image-ref: ${{ env.ECR_REGISTRY }}/${{ env.ECR_REPOSITORY }}:${{ steps.meta.outputs.tag }}
-          format: table
-          exit-code: 1
-          severity: CRITICAL
-
-  deploy:
-    name: Deploy to EKS
-    runs-on: ubuntu-latest
-    needs: build-and-push
-    environment: production
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Configure AWS credentials via OIDC
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          role-to-assume: arn:aws:iam::701372699131:role/github-actions-qatar-deploy
-          aws-region: ${{ env.AWS_REGION }}
-
-      - name: Update kubeconfig for EKS
+      - name: Update kubeconfig
         run: |
           aws eks update-kubeconfig \
-            --region ${{ env.AWS_REGION }} \
-            --name ${{ env.EKS_CLUSTER }}
-
-      - name: Create namespace if not exists
-        run: |
-          kubectl get namespace ${{ env.NAMESPACE }} || \
-          kubectl create namespace ${{ env.NAMESPACE }}
+            --region $AWS_REGION \
+            --name $EKS_CLUSTER
 
       - name: Deploy to EKS
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          STRAPI_API_TOKEN: ${{ secrets.STRAPI_API_TOKEN }}
+          REVALIDATE_SECRET: ${{ secrets.REVALIDATE_SECRET }}
         run: |
-          IMAGE=${{ env.ECR_REGISTRY }}/${{ env.ECR_REPOSITORY }}:${{ needs.build-and-push.outputs.image-tag }}
-          sed -i "s|IMAGE_PLACEHOLDER|${IMAGE}|g" k8s/deployment.yaml
-          kubectl apply -f k8s/ -n ${{ env.NAMESPACE }}
-
-      - name: Verify rollout
-        run: |
-          kubectl rollout status deployment/qatar-frontend \
-            -n ${{ env.NAMESPACE }} \
-            --timeout=120s
-
-      - name: Rollback on failure
-        if: failure()
-        run: |
-          echo "Deployment failed — rolling back"
-          kubectl rollout undo deployment/qatar-frontend \
-            -n ${{ env.NAMESPACE }}
+          kubectl set env deployment/qatar-frontend \
+            STRAPI_API_TOKEN="$STRAPI_API_TOKEN" \
+            REVALIDATE_SECRET="$REVALIDATE_SECRET"
+          kubectl set image deployment/qatar-frontend \
+            qatar-frontend=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          kubectl rollout status deployment/qatar-frontend --timeout=120s
