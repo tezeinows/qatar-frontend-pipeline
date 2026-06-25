@@ -13,18 +13,46 @@ export default async function HomePage({ params }: { params: { locale: string } 
   const { locale } = params
   if (!SUPPORTED_LOCALES.includes(locale)) notFound()
 
-  const [homepage, carousels, menuItems] = await Promise.all([
-    getHomepage(locale),
-    getCarousels(locale),
-    getMenuItems(locale),
-  ])
+  let homepage: any = null
+  let carousels: any[] = []
+  let menuItems: any[] = []
+  let fetchError: string | null = null
 
-  if (!homepage) notFound()
+  try {
+    ;[homepage, carousels, menuItems] = await Promise.all([
+      getHomepage(locale),
+      getCarousels(locale),
+      getMenuItems(locale),
+    ])
+  } catch (e: any) {
+    fetchError = e?.message ?? 'Unknown fetch error'
+  }
+
+  if (fetchError) {
+    return (
+      <div className="p-8 text-white">
+        <p className="text-ws-yellow font-bold">Strapi fetch error:</p>
+        <pre className="text-sm mt-2 text-white/70">{fetchError}</pre>
+      </div>
+    )
+  }
+
+  if (!homepage) {
+    return (
+      <div className="p-8 text-white">
+        <p className="text-ws-yellow font-bold">No homepage found for locale: {locale}</p>
+        <p className="text-sm mt-2 text-white/50">Token present: {process.env.STRAPI_API_TOKEN ? 'yes' : 'NO - missing!'}</p>
+      </div>
+    )
+  }
 
   const body: any[] = homepage.body ?? []
 
   return (
     <>
+      {body.length === 0 && (
+        <div className="p-8 text-white/50">Homepage found but body is empty.</div>
+      )}
       {body.map((block: any, i: number) => {
         switch (block.__component) {
           case 'sections.hero':
