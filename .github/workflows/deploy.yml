@@ -63,4 +63,4 @@ jobs:
         run: |
           sed -i "s|PLACEHOLDER_ECR_IMAGE|$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG|g" k8s/deployment.yaml
           kubectl apply -f k8s/deployment.yaml -n qatar-frontend
-          kubectl rollout status deployment/qatar-frontend -n qatar-frontend --timeout=120s
+          kubectl rollout status deployment/qatar-frontend -n qatar-frontend --timeout=300s
