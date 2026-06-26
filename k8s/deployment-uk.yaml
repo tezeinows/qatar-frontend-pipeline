@@ -37,7 +37,7 @@ spec:
             - name: DEV_FALLBACK_MARKET_DOMAIN
               value: wingstop.co.uk
             - name: MARKET_HOST_MAP
-              value: '{"eks-uat-uk.wingstop.qa":"wingstop.co.uk"}'
+              value: '{"eks-uk-cms.wingstop.qa":"wingstop.co.uk"}'
             - name: STRAPI_API_TOKEN
               valueFrom:
                 secretKeyRef:
@@ -89,7 +89,7 @@ metadata:
     alb.ingress.kubernetes.io/healthcheck-path: /api/health
 spec:
   rules:
-    - host: eks-uat-uk.wingstop.qa
+    - host: eks-uk-cms.wingstop.qa
       http:
         paths:
           - path: /
