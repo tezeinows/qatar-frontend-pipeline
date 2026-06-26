@@ -12,7 +12,7 @@ env:
 
 permissions:
   id-token: write
-  contents: read
+  contents: write
 
 jobs:
   deploy:
@@ -64,12 +64,25 @@ jobs:
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         run: |
+          FULL_IMAGE="$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
+
           for manifest in k8s/deployment*.yaml; do
             echo "--- Deploying $manifest ---"
-            sed -i "s|PLACEHOLDER_ECR_IMAGE|$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG|g" "$manifest"
+            sed -i "s|PLACEHOLDER_ECR_IMAGE|$FULL_IMAGE|g" "$manifest"
             kubectl apply -f "$manifest"
           done
 
           echo "--- Waiting for rollouts ---"
           kubectl rollout status deployment/qatar-frontend -n qatar-frontend --timeout=300s
           kubectl rollout status deployment/uk-frontend -n uk-frontend --timeout=300s
+
+      - name: Commit deployed image tag back to repo
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        run: |
+          FULL_IMAGE="$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add k8s/deployment*.yaml
+          git commit -m "chore: update deployed image to $IMAGE_TAG [skip ci]"
+          git push origin main
