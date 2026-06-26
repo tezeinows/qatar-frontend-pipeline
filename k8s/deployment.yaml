@@ -32,7 +32,7 @@ spec:
             - name: DEV_FALLBACK_MARKET_DOMAIN
               value: wingstop.qa
             - name: MARKET_HOST_MAP
-              value: '{"k8s-qatarfro-qatarfro-76125bb57a-1764750168.eu-central-1.elb.amazonaws.com":"wingstop.qa"}'
+              value: '{"k8s-qatarfro-qatarfro-76125bb57a-1764750168.eu-central-1.elb.amazonaws.com":"wingstop.qa","eks-uat-cms.wingstop.qa":"wingstop.qa"}'
             - name: STRAPI_API_TOKEN
               valueFrom:
                 secretKeyRef:
