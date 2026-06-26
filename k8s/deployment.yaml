@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: qatar-frontend
-          image: PLACEHOLDER_ECR_IMAGE
+          image: 701372699131.dkr.ecr.eu-central-1.amazonaws.com/qatar-front-end:567b8122caf9178e42678980da9221a7a527b001
           ports:
             - containerPort: 3000
           env:
