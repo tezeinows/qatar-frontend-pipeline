@@ -23,37 +23,38 @@ spec:
           env:
             - name: NODE_ENV
               value: production
-            - name: NEXT_PUBLIC_STRAPI_URL
+            - name: STRAPI_API_URL
               value: https://cms.globalwingstop.com
+            - name: NEXT_PUBLIC_STRAPI_PUBLIC_URL
+              value: https://cms.globalwingstop.com
+            - name: NEXT_PUBLIC_DEPLOY_ENV
+              value: uat-qa
+            - name: DEV_FALLBACK_MARKET_DOMAIN
+              value: wingstop.qa
             - name: STRAPI_API_TOKEN
               valueFrom:
                 secretKeyRef:
                   name: qatar-frontend-secrets
                   key: strapi-api-token
-            - name: REVALIDATE_SECRET
-              valueFrom:
-                secretKeyRef:
-                  name: qatar-frontend-secrets
-                  key: revalidate-secret
           resources:
             requests:
-              cpu: 100m
-              memory: 256Mi
-            limits:
-              cpu: 500m
+              cpu: 250m
               memory: 512Mi
+            limits:
+              cpu: 1000m
+              memory: 1Gi
           readinessProbe:
             httpGet:
-              path: /en-QA
+              path: /api/health
               port: 3000
-            initialDelaySeconds: 15
+            initialDelaySeconds: 20
             periodSeconds: 10
           livenessProbe:
             httpGet:
-              path: /
+              path: /api/health
               port: 3000
             initialDelaySeconds: 30
-            periodSeconds: 10
+            periodSeconds: 15
 ---
 apiVersion: v1
 kind: Service

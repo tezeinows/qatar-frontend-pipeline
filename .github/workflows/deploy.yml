@@ -20,8 +20,15 @@ jobs:
     environment: production
 
     steps:
-      - name: Checkout
+      - name: Checkout pipeline repo
         uses: actions/checkout@v4
+
+      - name: Checkout global-wingstop-web
+        uses: actions/checkout@v4
+        with:
+          repository: wingstop-inc/global-wingstop-web
+          token: ${{ secrets.GH_PAT }}
+          path: global-wingstop-web
 
       - name: Configure AWS credentials (OIDC)
         uses: aws-actions/configure-aws-credentials@v4
@@ -33,23 +40,20 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
 
-      - name: Build, tag, and push image to ECR
+      - name: Build and push image to ECR
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         run: |
           docker build \
-            --build-arg NEXT_PUBLIC_STRAPI_URL=https://cms.globalwingstop.com \
+            --file global-wingstop-web/apps/web/Dockerfile \
+            --context global-wingstop-web \
+            --platform linux/amd64 \
+            --build-arg STRAPI_API_URL=https://cms.globalwingstop.com \
+            --build-arg NEXT_PUBLIC_STRAPI_PUBLIC_URL=https://cms.globalwingstop.com \
+            --build-arg NEXT_PUBLIC_DEPLOY_ENV=uat-qa \
             -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG \
             .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-
-      - name: Scan image for critical vulnerabilities
-        env:
-          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-        run: |
-          aws ecr start-image-scan \
-            --repository-name $ECR_REPOSITORY \
-            --image-id imageTag=$IMAGE_TAG || true
 
       - name: Update kubeconfig
         run: |
