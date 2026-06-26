@@ -29,7 +29,6 @@ export async function getMarket(locale: string) {
 export async function getHomepage(locale: string) {
   const data = await fetchStrapi<any>('/homepages', {
     'populate[body][populate]': '*',
-    'populate[seo]': '*',
     'pagination[pageSize]': '1',
     locale,
   })
