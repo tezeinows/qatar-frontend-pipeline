@@ -60,10 +60,16 @@ jobs:
             --region $AWS_REGION \
             --name $EKS_CLUSTER
 
-      - name: Deploy to EKS
+      - name: Deploy all markets to EKS
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         run: |
-          sed -i "s|PLACEHOLDER_ECR_IMAGE|$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG|g" k8s/deployment.yaml
-          kubectl apply -f k8s/deployment.yaml -n qatar-frontend
+          for manifest in k8s/deployment*.yaml; do
+            echo "--- Deploying $manifest ---"
+            sed -i "s|PLACEHOLDER_ECR_IMAGE|$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG|g" "$manifest"
+            kubectl apply -f "$manifest"
+          done
+
+          echo "--- Waiting for rollouts ---"
           kubectl rollout status deployment/qatar-frontend -n qatar-frontend --timeout=300s
+          kubectl rollout status deployment/uk-frontend -n uk-frontend --timeout=300s
