@@ -1,0 +1,77 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: uk-frontend
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: uk-frontend
+  namespace: uk-frontend
+  labels:
+    app: uk-frontend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: uk-frontend
+  template:
+    metadata:
+      labels:
+        app: uk-frontend
+    spec:
+      containers:
+        - name: uk-frontend
+          image: PLACEHOLDER_ECR_IMAGE
+          ports:
+            - containerPort: 3000
+          env:
+            - name: NODE_ENV
+              value: production
+            - name: STRAPI_API_URL
+              value: https://cms.globalwingstop.com
+            - name: NEXT_PUBLIC_STRAPI_PUBLIC_URL
+              value: https://cms.globalwingstop.com
+            - name: NEXT_PUBLIC_DEPLOY_ENV
+              value: uat-uk
+            - name: DEV_FALLBACK_MARKET_DOMAIN
+              value: wingstop.co.uk
+            - name: MARKET_HOST_MAP
+              value: '{"eks-uat-uk.wingstop.qa":"wingstop.co.uk"}'
+            - name: STRAPI_API_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: frontend-secrets
+                  key: strapi-api-token
+          resources:
+            requests:
+              cpu: 250m
+              memory: 512Mi
+            limits:
+              cpu: 1000m
+              memory: 1Gi
+          readinessProbe:
+            httpGet:
+              path: /api/health
+              port: 3000
+            initialDelaySeconds: 20
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /api/health
+              port: 3000
+            initialDelaySeconds: 30
+            periodSeconds: 15
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: uk-frontend-svc
+  namespace: uk-frontend
+spec:
+  selector:
+    app: uk-frontend
+  ports:
+    - port: 3000
+      targetPort: 3000
+  type: ClusterIP
