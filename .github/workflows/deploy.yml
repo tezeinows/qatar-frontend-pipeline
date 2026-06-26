@@ -46,13 +46,12 @@ jobs:
         run: |
           docker build \
             --file global-wingstop-web/apps/web/Dockerfile \
-            --context global-wingstop-web \
             --platform linux/amd64 \
             --build-arg STRAPI_API_URL=https://cms.globalwingstop.com \
             --build-arg NEXT_PUBLIC_STRAPI_PUBLIC_URL=https://cms.globalwingstop.com \
             --build-arg NEXT_PUBLIC_DEPLOY_ENV=uat-qa \
             -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG \
-            .
+            global-wingstop-web
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
 
       - name: Update kubeconfig
